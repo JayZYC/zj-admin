@@ -12,7 +12,7 @@ type CommonResponse struct {
 	Data    interface{} `json:"data"`    // 实际数据
 }
 
-func New(c gin.Context, message string, data interface{}) {
+func New(c *gin.Context, message string, data interface{}) {
 	c.JSON(http.StatusOK, CommonResponse{
 		Success: true,
 		Message: message,
@@ -20,14 +20,14 @@ func New(c gin.Context, message string, data interface{}) {
 	})
 }
 
-func Success(c gin.Context) {
+func Success(c *gin.Context) {
 	c.JSON(http.StatusOK, CommonResponse{
 		Success: true,
 		Message: "OK",
 	})
 }
 
-func OK(c gin.Context, data interface{}) {
+func OK(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusOK, CommonResponse{
 		Success: true,
 		Message: "ok",
@@ -35,32 +35,38 @@ func OK(c gin.Context, data interface{}) {
 	})
 }
 
-func Message(c gin.Context, message string) {
+func Message(c *gin.Context, message string) {
 	c.JSON(http.StatusOK, CommonResponse{
 		Success: true,
 		Message: message,
 	})
 }
 
-func BadRequest(c gin.Context, err error) {
+func BadRequest(c *gin.Context, err error) {
 	c.JSON(http.StatusBadRequest, CommonResponse{
 		Message: err.Error(),
 	})
 }
 
-func Fail(c gin.Context, err error) {
+func Fail(c *gin.Context, err error) {
 	c.JSON(http.StatusOK, CommonResponse{
 		Message: err.Error(),
 	})
 }
 
-func NotFound(c gin.Context, err error) {
+func NotFound(c *gin.Context, err error) {
 	c.JSON(http.StatusNotFound, CommonResponse{
 		Message: fmt.Sprintf("%v", err),
 	})
 }
 
-func InternalServerError(c gin.Context, err error) {
+func NoPermission(c *gin.Context, err error) {
+	c.JSON(http.StatusForbidden, CommonResponse{
+		Message: fmt.Sprintf("%v", err),
+	})
+}
+
+func InternalServerError(c *gin.Context, err error) {
 	c.JSON(http.StatusInternalServerError, CommonResponse{
 		Message: fmt.Sprintf("%v", err),
 	})

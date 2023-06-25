@@ -22,9 +22,9 @@ func main() {
 
 	cache.Init()
 
-	db := db.Init()
+	dbConn := db.Init()
 
-	defer db.Close()
+	defer dbConn.Close()
 
 	log.Info().Str("version", os.Getenv("version")).Interface("env", os.Getenv("ENV")).
 		Bool("debug", config.Debug()).Str("host", config.Host()).Msg(config.ProjectName() + " running")
