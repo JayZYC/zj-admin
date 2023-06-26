@@ -181,8 +181,6 @@ $$;
 
 /*
 查询真正能看到设备的用户
-created
-voson 19-3-27
 */
 create or replace function query_real_users_of_device(deviceid uuid)
   returns setof uuid
@@ -208,51 +206,4 @@ begin
 end;
 $$;
 
-
-/*线路*/
---  更新用户和线路的绑定关系
-create or replace function update_user_lines(userid uuid, deviceid uuid, lines anyarray)
-    returns setof void
-    language plpgsql
-as
-$$
-declare
-    now  bigint := FLOOR(EXTRACT(epoch FROM ((CURRENT_TIMESTAMP - TIMESTAMP '1970-01-01 00:00:00') * 1000)));
-    line integer;
-begin
-    delete
-    from user_line
-    where device_id = deviceid
-      and user_id = userid;
-    foreach line in array lines
-        loop
-            insert into user_line (user_id, device_id, line_no, created) values (userid, deviceid, line, now);
-        end loop;
-end;
-$$;
-
-/*二维码*/
-create or replace function new_sn(num integer, orgid uuid)
-    returns integer
-    language plpgsql
-as
-$$
-declare
-    now bigint := FLOOR(EXTRACT(epoch FROM ((CURRENT_TIMESTAMP - TIMESTAMP '1970-01-01 00:00:00') * 1000)));
-    max integer;
-begin
-	/*初始化
-		初始值：100000000
-	*/
-    select max(sn) into max from qr_code;
-	if max is null then
-        max = 100000000;
-    end if;
-    for i in 1..num
-        LOOP
-            insert into qr_code (created, updated, sn, organization_id) values (now, now, max + i, orgid);
-        end loop;
-    return max;
-end;
-$$;
 `

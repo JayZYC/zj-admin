@@ -3,7 +3,7 @@ package cache
 import (
 	"context"
 	"github.com/go-redis/redis/v9"
-	"log"
+	"github.com/rs/zerolog/log"
 	"os"
 	"time"
 )
@@ -13,13 +13,13 @@ var client *redis.Client
 func Init() {
 
 	client = redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_ADDRESS"),
-		Password: os.Getenv("REDIS_PASSWORD"),
+		Addr:     os.Getenv("redis_address"),
+		Password: os.Getenv("redis_password"),
 	})
 
 	_, err := client.Ping(context.Background()).Result()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msgf("Cannot connect redis")
 	}
 }
 

@@ -11,7 +11,7 @@ func InitLog() {
 	// 必须添加这句，否则还是会成为debug level
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
-	if os.Getenv("DEBUG") == "true" {
+	if os.Getenv("debug") == "true" {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
 

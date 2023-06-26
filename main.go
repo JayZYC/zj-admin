@@ -27,7 +27,7 @@ func main() {
 	defer dbConn.Close()
 
 	log.Info().Str("version", os.Getenv("version")).Interface("env", os.Getenv("ENV")).
-		Bool("debug", config.Debug()).Str("host", config.Host()).Msg(config.ProjectName() + " running")
+		Bool("debug", config.Debug()).Msg(config.ProjectName() + " running")
 
 	r := gin.Default()
 	// 加载路由

@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"zj-admin/config"
 	"zj-admin/model"
 )
 import "github.com/jinzhu/gorm"
@@ -19,12 +20,12 @@ func Init() *gorm.DB {
 	database := os.Getenv("db_database")
 	username := os.Getenv("db_username")
 	password := os.Getenv("db_password")
-	args := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true",
-		username,
-		password,
+	args := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
 		host,
 		port,
-		database)
+		username,
+		database,
+		password)
 
 	var err error
 	db, err = gorm.Open("postgres", args)
@@ -34,6 +35,10 @@ func Init() *gorm.DB {
 
 	//set this to true, `User`'s default table name will be `user`, table name setted with `TableName` won't be affected
 	db.SingularTable(true)
+
+	if config.Debug() {
+		db = db.Debug()
+	}
 
 	// 调用注册函数
 	// 在使用gorm创建新的数据记录时，自动加上id和时间
@@ -56,11 +61,11 @@ func Init() *gorm.DB {
 
 func beforeCreated(scope *gorm.Scope) {
 	now := time.Now().UnixNano() / 1e6
-	scope.SetColumn("ID", uuid.New())
-	scope.SetColumn("Created", now)
-	scope.SetColumn("Updated", now)
+	scope.SetColumn("id", uuid.New())
+	scope.SetColumn("create_time", now)
+	scope.SetColumn("update_time", now)
 }
 
 func beforeUpdated(scope *gorm.Scope) {
-	scope.SetColumn("Updated", time.Now().UnixNano()/1e6)
+	scope.SetColumn("update_time", time.Now().UnixNano()/1e6)
 }
