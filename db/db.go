@@ -2,14 +2,14 @@ package db
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 	"log"
 	"os"
 	"time"
 	"zj-admin/config"
-	"zj-admin/model"
+
+	"github.com/google/uuid"
+	"github.com/jinzhu/gorm"
 )
-import "github.com/jinzhu/gorm"
 
 var db *gorm.DB
 
@@ -37,20 +37,14 @@ func Init() *gorm.DB {
 	db.SingularTable(true)
 
 	if config.Debug() {
-		db = db.Debug()
+		// 启用Logger，显示详细日志
+		db.LogMode(true)
 	}
 
 	// 调用注册函数
 	// 在使用gorm创建新的数据记录时，自动加上id和时间
 	db.Callback().Create().Before("gorm:create").Register("before_created", beforeCreated)
 	db.Callback().Update().Before("gorm:update").Register("before_updated", beforeUpdated)
-
-	/*建表或更新表*/
-	db.AutoMigrate(
-		&model.Organization{},
-		&model.Role{},
-		&model.User{},
-	)
 
 	if err := db.Exec(StoreProcedure).Error; err != nil {
 		log.Fatal("存储过程执行失败:", err)
@@ -60,12 +54,12 @@ func Init() *gorm.DB {
 }
 
 func beforeCreated(scope *gorm.Scope) {
-	now := time.Now().UnixNano() / 1e6
+	now := time.Now()
 	scope.SetColumn("id", uuid.New())
 	scope.SetColumn("create_time", now)
 	scope.SetColumn("update_time", now)
 }
 
 func beforeUpdated(scope *gorm.Scope) {
-	scope.SetColumn("update_time", time.Now().UnixNano()/1e6)
+	scope.SetColumn("update_time", time.Now())
 }

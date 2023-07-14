@@ -1,10 +1,18 @@
 package util
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"math/rand"
+	"regexp"
+	"strings"
 	"time"
 	"unicode"
+
+	"github.com/google/uuid"
 )
+
+const admin = "5138e5da-4161-485a-bd1f-5f5a10de2f80"
 
 // SpecialLetters
 // 如果存在特殊字符，直接在特殊字符前添加\
@@ -32,3 +40,29 @@ func Shuffle[T any](arr []T) []T {
 	}
 	return slc
 }
+
+func IsMD5(str string) bool {
+	str = strings.ToLower(str)
+	md5Reg := regexp.MustCompile(`^[a-f0-9]{32}$`)
+	return md5Reg.MatchString(str)
+}
+
+func Md5encode(arg0 string) string {
+	h := md5.New()
+	h.Write([]byte(arg0))
+	cipherStr := h.Sum(nil)
+	return strings.ToLower(hex.EncodeToString(cipherStr)) // 输出加密结果
+}
+
+// IsAdmin 判断是否为超管
+func IsAdmin(id uuid.UUID) bool {
+	return id.String() == admin
+}
+
+// func Where(c *gin.Context, db *gorm.DB) *gorm.DB {
+// 	user := jwt.GetUser(c)
+// 	if IsAdmin(user.RoleID) {
+// 		return db
+// 	}
+// 	db = db.Where()
+// }

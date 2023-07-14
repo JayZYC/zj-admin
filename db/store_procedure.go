@@ -1,7 +1,36 @@
 package db
 
 const StoreProcedure = `
----- 组织 1个----
+
+---- 角色 1个----
+
+/*查找指定角色下所有的子角色
+（结果集中包含指定角色）
+*/
+create or replace function query_child_roles(roleid uuid)
+  returns setof role
+  language plpgsql
+as
+$$
+begin
+	--- 递归查询指定角色下所有的子角色
+  return query WITH RECURSIVE roles AS
+    (SELECT *
+     FROM role
+     WHERE role.id = roleid
+     UNION
+     SELECT role.*
+     FROM role,
+          roles
+     WHERE role.parent_id = roles.id
+       AND role.delete_time IS NULL)
+    SELECT *
+    FROM roles
+    ORDER BY create_time;
+end;
+$$;
+
+---- 组织 2个----
 
 /*查找指定组织下所有的子组织
 （结果集中包含指定组织）
@@ -22,10 +51,10 @@ begin
      FROM organization,
           orgs
      WHERE organization.parent_id = orgs.id
-       AND organization.deleted IS NULL)
+       AND organization.delete_time IS NULL)
     SELECT *
     FROM orgs
-    ORDER BY created;
+    ORDER BY create_time;
 end;
 $$;
 
@@ -49,7 +78,7 @@ begin
                                    FROM organization,
                                         orgs
                                    WHERE organization.parent_id = orgs.id
-                                     AND organization.deleted IS NULL)
+                                     AND organization.delete_time IS NULL)
                  SELECT orgs.id
                  FROM orgs
                );

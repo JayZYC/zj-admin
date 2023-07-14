@@ -2,10 +2,17 @@ package cache
 
 import (
 	"context"
-	"github.com/go-redis/redis/v9"
-	"github.com/rs/zerolog/log"
+	"encoding/json"
 	"os"
 	"time"
+
+	"github.com/go-redis/redis/v9"
+	"github.com/rs/zerolog/log"
+)
+
+const (
+	Token = "token_" // 自定义登录过期时间
+	Perm  = "perm_"  // 用户按钮权限
 )
 
 var client *redis.Client
@@ -37,4 +44,32 @@ func Set(key string, value interface{}, expiration time.Duration) error {
 
 func Del(keys ...string) error {
 	return client.Del(context.Background(), keys...).Err()
+}
+
+// Expire
+// 刷新key过期时间
+func Expire(key string, expiration time.Duration) {
+	client.Expire(context.Background(), key, expiration)
+}
+
+// Get
+// 如果key不存在，返回redis.Nil
+func GetArr(key string) (interface{}, error) {
+	val, err := client.Get(context.Background(), key).Result()
+	if err != nil {
+		return nil, err
+	}
+	var value interface{}
+	err = json.Unmarshal([]byte(val), &value)
+	return value, err
+}
+
+// SetArr
+// 序列化数组或结构体后存入
+func SetArr(key string, value interface{}, expiration time.Duration) error {
+	val, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+	return client.Set(context.Background(), key, val, expiration).Err()
 }

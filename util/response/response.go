@@ -1,9 +1,20 @@
 package response
 
 import (
-	"fmt"
-	"github.com/gin-gonic/gin"
+	"errors"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+var (
+	ErrNoPermission    = errors.New("权限不足")
+	ErrUserNotFound    = errors.New("账号或者密码错误")
+	ErrAccountDisabled = errors.New("该账户已停用")
+	ErrTokenExPire     = errors.New("登录过期")
+	ErrOtherLogin      = errors.New("账号已在别处登录")
+	ErrHasExist        = errors.New("账号或手机已存在")
+	ErrParameter       = errors.New("参数错误")
 )
 
 type CommonResponse struct {
@@ -23,7 +34,7 @@ func New(c *gin.Context, message string, data interface{}) {
 func Success(c *gin.Context) {
 	c.JSON(http.StatusOK, CommonResponse{
 		Success: true,
-		Message: "OK",
+		Message: "ok",
 	})
 }
 
@@ -56,18 +67,18 @@ func Fail(c *gin.Context, err error) {
 
 func NotFound(c *gin.Context, err error) {
 	c.JSON(http.StatusNotFound, CommonResponse{
-		Message: fmt.Sprintf("%v", err),
+		Message: err.Error(),
 	})
 }
 
 func NoPermission(c *gin.Context, err error) {
 	c.JSON(http.StatusForbidden, CommonResponse{
-		Message: fmt.Sprintf("%v", err),
+		Message: err.Error(),
 	})
 }
 
 func InternalServerError(c *gin.Context, err error) {
 	c.JSON(http.StatusInternalServerError, CommonResponse{
-		Message: fmt.Sprintf("%v", err),
+		Message: err.Error(),
 	})
 }

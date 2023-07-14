@@ -2,18 +2,20 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog/log"
 	"net/http"
-	"regexp"
 	"strings"
+	"zj-admin/cache"
 	jwtToken "zj-admin/util/jwt"
 	"zj-admin/util/response"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v9"
+	"github.com/rs/zerolog/log"
 )
 
 var (
-	skipper = []string{"login"}
+	skipper = []string{"login"} // 跳过鉴权的路由
 )
 
 // Auth  token校验
@@ -21,7 +23,7 @@ func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		for _, s := range skipper {
-			ok, _ := regexp.MatchString(c.Request.URL.Path, s)
+			ok := strings.Contains(c.Request.URL.Path, s)
 			if ok {
 				c.Next()
 				return
@@ -30,7 +32,7 @@ func Auth() gin.HandlerFunc {
 
 		tokenString := strings.Split(c.Request.Header.Get("Authorization"), " ")
 		if len(tokenString) != 2 || tokenString[0] != "Bearer" {
-			response.BadRequest(c, fmt.Errorf("server is too busy"))
+			response.BadRequest(c, response.ErrTokenExPire)
 			c.Abort()
 			return
 		}
@@ -39,7 +41,7 @@ func Auth() gin.HandlerFunc {
 			return []byte(jwtToken.SigningKey), nil
 		})
 		if err != nil {
-			response.BadRequest(c, fmt.Errorf("server is too busy"))
+			response.BadRequest(c, response.ErrTokenExPire)
 			c.Abort()
 			return
 		}
@@ -50,6 +52,27 @@ func Auth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
+		val, err := cache.Get(fmt.Sprintf("%s%s", cache.Token, claims.UserID.String()))
+		if err == redis.Nil {
+			response.BadRequest(c, response.ErrTokenExPire)
+			c.Abort()
+			return
+		}
+
+		if err != nil {
+			response.InternalServerError(c, err)
+			c.Abort()
+			return
+		}
+
+		if val != tokenString[1] {
+			response.InternalServerError(c, response.ErrOtherLogin)
+			c.Abort()
+			return
+		}
+
+		cache.Expire(fmt.Sprintf("%s%s", cache.Token, claims.UserID.String()), jwtToken.TokenExp)
 
 		c.Set("user", claims)
 		c.Next()
