@@ -23,14 +23,14 @@ begin
      FROM role,
           roles
      WHERE role.parent_id = roles.id
-       AND role.delete_time IS NULL)
+       AND role."deletedAt" IS NULL)
     SELECT *
     FROM roles
     ORDER BY create_time;
 end;
 $$;
 
----- 组织 2个----
+---- 组织 3个----
 
 /*查找指定组织下所有的子组织
 （结果集中包含指定组织）
@@ -51,8 +51,34 @@ begin
      FROM organization,
           orgs
      WHERE organization.parent_id = orgs.id
-       AND organization.delete_time IS NULL)
+       AND organization."deletedAt" IS NULL)
     SELECT *
+    FROM orgs
+    ORDER BY create_time;
+end;
+$$;
+
+/*查找指定组织下所有的子组织ID
+（结果集中包含指定组织）
+*/
+create or replace function query_child_organizations_id(orgid uuid)
+  returns setof uuid
+  language plpgsql
+as
+$$
+begin
+	--- 递归查询指定组织下所有的子组织
+  return query WITH RECURSIVE orgs AS
+    (SELECT *
+     FROM organization
+     WHERE organization.id = orgid
+     UNION
+     SELECT organization.*
+     FROM organization,
+          orgs
+     WHERE organization.parent_id = orgs.id
+       AND organization."deletedAt" IS NULL)
+    SELECT id
     FROM orgs
     ORDER BY create_time;
 end;
@@ -78,7 +104,7 @@ begin
                                    FROM organization,
                                         orgs
                                    WHERE organization.parent_id = orgs.id
-                                     AND organization.delete_time IS NULL)
+                                     AND organization."deletedAt" IS NULL)
                  SELECT orgs.id
                  FROM orgs
                );

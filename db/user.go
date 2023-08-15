@@ -27,7 +27,7 @@ func FindUserList(user jwt.CustomClaims, page pagination.PageRequest) (paginatio
 		err = db.Table("\"user\" t1").
 			Select("t1.id, t1.username, t1.phone, t1.email, t1.avatar, t1.nick_name, t1.role_id, t1.status, t1.create_time, t2.name role_name").
 			Joins("LEFT JOIN role t2 ON t1.role_id = t2.id").
-			Order("create_time desc").
+			Order("create_time").
 			Offset(page.GetOffset()).
 			Limit(page.PageSize).
 			Scan(&users).
@@ -35,8 +35,8 @@ func FindUserList(user jwt.CustomClaims, page pagination.PageRequest) (paginatio
 			Limit(-1).
 			Count(&total).Error
 	} else {
-		err = db.Raw("SELECT t1.id, t1.username, t1.phone, t1.email, t1.avatar, t1.nick_name, t1.role_id, t1.status, t1.create_time, t2.name role_name FROM \"user\" t1 LEFT JOIN role t2 ON t1.role_id = t2.id WHERE t1.organization_id = ANY(SELECT query_child_organizations_id(?)) AND t1.delete_time IS NULL", user.OrganizationID).
-			Order("create_time desc").
+		err = db.Raw("SELECT t1.id, t1.username, t1.phone, t1.email, t1.avatar, t1.nick_name, t1.role_id, t1.status, t1.create_time, t2.name role_name FROM \"user\" t1 LEFT JOIN role t2 ON t1.role_id = t2.id WHERE t1.organization_id = ANY(SELECT query_child_organizations_id(?)) AND t1.\"deletedAt\" IS NULL", user.OrganizationID).
+			Order("create_time").
 			Offset(page.GetOffset()).
 			Limit(page.PageSize).
 			Scan(&users).Error
@@ -46,7 +46,7 @@ func FindUserList(user jwt.CustomClaims, page pagination.PageRequest) (paginatio
 		var count struct {
 			Count int64
 		}
-		err = db.Raw("SELECT count(1) count FROM \"user\"  WHERE organization_id = ANY(SELECT query_child_organizations_id(?)) AND delete_time IS NULL", user.OrganizationID).Scan(&count).Error
+		err = db.Raw("SELECT count(1) count FROM \"user\"  WHERE organization_id = ANY(SELECT query_child_organizations_id(?)) AND \"deletedAt\" IS NULL", user.OrganizationID).Scan(&count).Error
 		total = count.Count
 	}
 

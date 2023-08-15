@@ -12,12 +12,6 @@ func Register(api *gin.RouterGroup) {
 
 	a.POST("/login", login)
 
-	//a.POST("/login/captcha", loginByCaptcha)
-	//
-	//a.POST("/login/wechat", loginByWechat)
-	//
-	//a.POST("/login/ak", loginByAK)
-	//
 	//a.POST("/logout", logout)
 
 	/** user 用户 **/
@@ -41,5 +35,15 @@ func Register(api *gin.RouterGroup) {
 	a.PUT("/role", updateRole)
 
 	a.DELETE("/role", deleteRole)
+
+	/** organization 组织 **/
+
+	a.GET("/organizations", getOrgList)
+
+	a.POST("/organization", addOrg)
+
+	a.PUT("/organization", updateOrg)
+
+	a.DELETE("/organization", deleteOrg)
 
 }

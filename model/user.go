@@ -23,9 +23,8 @@ type (
 	Users []User
 
 	UserInfo struct {
-		ID       uuid.UUID `json:"id"`
+		Model
 		UserName string    `json:"username" gorm:"column:username" form:"username"`
-
 		Phone    string    `json:"phone"`
 		Email    string    `json:"email"`
 		Avatar   []byte    `json:"avatar" form:"avatar"`

@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
+	"gorm.io/gorm"
 )
 
 type (
@@ -18,20 +19,20 @@ type (
 	Roles []Role
 
 	RolePerm struct {
-		ID         uuid.UUID  `json:"id"`
-		ParentID   uuid.UUID  `json:"parent_id" gorm:"column:parent_id"`
-		Name       string     `json:"name"`
-		Type       int        `json:"type"`
-		Path       string     `json:"path"`
-		Component  string     `json:"component"`
-		Perm       string     `json:"perm"`
-		Visible    int        `json:"visible"`
-		Sort       int        `json:"sort"`
-		Icon       string     `json:"icon"`
-		Redirec    string     `json:"redirect"`
-		CreateTime *time.Time `json:"create_time"`
-		UpdateTime *time.Time `json:"update_time"`
-		DeleteTime *time.Time `json:"delete_time"`
+		ID         uuid.UUID      `json:"id"`
+		ParentID   uuid.UUID      `json:"parent_id" gorm:"column:parent_id"`
+		Name       string         `json:"name"`
+		Type       int            `json:"type"`
+		Path       string         `json:"path"`
+		Component  string         `json:"component"`
+		Perm       string         `json:"perm"`
+		Visible    int            `json:"visible"`
+		Sort       int            `json:"sort"`
+		Icon       string         `json:"icon"`
+		Redirec    string         `json:"redirect"`
+		CreateTime *time.Time     `json:"create_time"`
+		UpdateTime *time.Time     `json:"update_time"`
+		DeletedAt  gorm.DeletedAt `json:"deletedAt"`
 	}
 
 	// 更新角色

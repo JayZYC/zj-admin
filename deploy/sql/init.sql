@@ -12,7 +12,7 @@ CREATE TABLE "user" (
     "avatar" varchar(40) DEFAULT NULL,
     "create_time" TIMESTAMPTZ DEFAULT NULL,
     "update_time" TIMESTAMPTZ DEFAULT NULL,
-    "delete_time" TIMESTAMPTZ DEFAULT NULL,
+    "deletedAt" TIMESTAMPTZ DEFAULT NULL,
     "nick_name" varchar(40) DEFAULT NULL,
     "role_id" uuid DEFAULT NULL,
     "status" integer DEFAULT 1,
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS "role" (
     "id" uuid PRIMARY KEY,
     "create_time" TIMESTAMPTZ DEFAULT NULL,
     "update_time" TIMESTAMPTZ DEFAULT NULL,
-    "delete_time" TIMESTAMPTZ DEFAULT NULL,
+    "deletedAt" TIMESTAMPTZ DEFAULT NULL,
     "name" varchar(40) DEFAULT NULL,
     "access" integer [] DEFAULT NULL,
     "parent_id" uuid DEFAULT NULL
@@ -124,7 +124,7 @@ CREATE TABLE "role_perm" (
     "redirect" varchar(128) NULL DEFAULT NULL,
     "create_time" TIMESTAMPTZ DEFAULT NULL,
     "update_time" TIMESTAMPTZ DEFAULT NULL,
-    "delete_time" TIMESTAMPTZ DEFAULT NULL
+    "deletedAt" TIMESTAMPTZ DEFAULT NULL
 );
 
 comment on table role_perm is '菜单管理';
@@ -301,7 +301,7 @@ CREATE TABLE "organization" (
     "address" varchar(128),
     "create_time" TIMESTAMPTZ DEFAULT NULL,
     "update_time" TIMESTAMPTZ DEFAULT NULL,
-    "delete_time" TIMESTAMPTZ DEFAULT NULL
+    "deletedAt" TIMESTAMPTZ DEFAULT NULL
 );
 
 comment on column organization.parent_id is '父组织ID';

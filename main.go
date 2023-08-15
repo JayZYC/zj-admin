@@ -33,5 +33,5 @@ func main() {
 	// 加载路由
 	router.Init(r)
 
-	log.Fatal().Err(r.Run(":3001"))
+	log.Fatal().Err(r.Run(":1010"))
 }

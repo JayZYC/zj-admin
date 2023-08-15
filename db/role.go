@@ -36,7 +36,7 @@ func AddRole(role model.Role) error {
 }
 
 func UpdateRole(role model.UpdateRole) error {
-	return db.Model(&model.Role{}).Omit("create_time", "parent_id").Update(&role).Error
+	return db.Model(&model.Role{}).Update(&role).Error
 }
 
 func DeleteRole(id uuid.UUID) error {
