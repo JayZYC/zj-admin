@@ -78,7 +78,7 @@ func addUser(c *gin.Context) {
 }
 
 func updateUser(c *gin.Context) {
-	var user model.User
+	var user model.UpdateUser
 	if err := c.ShouldBind(&user); err != nil {
 		response.BadRequest(c, err)
 		return

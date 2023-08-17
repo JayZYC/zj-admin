@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog/log"
 	"os"
 	"zj-admin/cache"
 	"zj-admin/config"
 	"zj-admin/db"
 	"zj-admin/router"
 	"zj-admin/util"
+
+	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
@@ -22,9 +23,7 @@ func main() {
 
 	cache.Init()
 
-	dbConn := db.Init()
-
-	defer dbConn.Close()
+	db.Init()
 
 	log.Info().Str("version", os.Getenv("version")).Interface("env", os.Getenv("ENV")).
 		Bool("debug", config.Debug()).Msg(config.ProjectName() + " running")

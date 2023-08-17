@@ -17,7 +17,7 @@ func AddOrg(org model.Organization) error {
 }
 
 func UpdateOrg(org model.UpdateOrg) error {
-	return db.Model(&model.Organization{}).Update(&org).Error
+	return db.Model(&org).Updates(&org).Error
 }
 
 func DeleteOrg(id uuid.UUID) error {

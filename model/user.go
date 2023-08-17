@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type (
@@ -37,8 +38,8 @@ type (
 	UserInfos []UserInfo
 
 	UpdateUser struct {
-		ID             uuid.UUID  `json:"id" binding:"required"`
-		UpdateTime     *time.Time `json:"update_time"`
+		ID             uuid.UUID  `json:"id" gorm:"primarykey" binding:"required"`
+		UpdateTime     *time.Time `json:"update_time" gorm:"autoUpdateTime"`
 		Password       string     `json:"password,omitempty" gorm:"column:password" form:"password"`
 		NickName       string     `json:"nick_name" form:"nick_name"`
 		Avatar         []byte     `json:"avatar" form:"avatar"`
@@ -48,3 +49,16 @@ type (
 		RoleID         uuid.UUID  `json:"role_id" gorm:"column:role_id" form:"role_id"`
 	}
 )
+
+func (u *Users) TableName() string {
+	return "user"
+}
+
+func (u *UpdateUser) TableName() string {
+	return "user"
+}
+
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	u.ID = uuid.New()
+	return
+}

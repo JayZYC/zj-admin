@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type (
@@ -29,8 +30,8 @@ type (
 	OrganizationList []*OrganizationInfo
 
 	UpdateOrg struct {
-		ID         uuid.UUID  `json:"id" binding:"required"`
-		UpdateTime *time.Time `json:"update_time"`
+		ID         uuid.UUID  `json:"id" gorm:"primarykey" binding:"required"`
+		UpdateTime *time.Time `json:"update_time" gorm:"autoUpdateTime"`
 		Name       string     `gorm:"type:varchar(800);unique_index;not null;"`
 		Province   string     `gorm:"type:varchar(200)"`
 		City       string     `gorm:"type:varchar(200)"`
@@ -39,3 +40,12 @@ type (
 		ParentID   uuid.UUID  `json:"parent_id,string"` // 上级组织
 	}
 )
+
+func (o *Organization) BeforeCreate(tx *gorm.DB) (err error) {
+	o.ID = uuid.New()
+	return
+}
+
+func (u *UpdateOrg) TableName() string {
+	return "organization"
+}

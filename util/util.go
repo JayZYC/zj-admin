@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 	"unicode"
+	"zj-admin/model"
 
 	"github.com/google/uuid"
 )
@@ -57,6 +58,32 @@ func Md5encode(arg0 string) string {
 // IsAdmin 判断是否为超管
 func IsAdmin(id uuid.UUID) bool {
 	return id.String() == admin
+}
+
+// GetMenuTree 递归生成树状菜单路由
+func GetMenuTree(pid int64, list model.Menus) []model.MenuRoute {
+	tree := make([]model.MenuRoute, 0, len(list))
+	for _, menu := range list {
+		if menu.ParentID == pid {
+			t := model.MenuRoute{
+				ID:        menu.ID,
+				Name:      menu.Name,
+				Component: menu.Component,
+				Path:      menu.Path,
+				MenuMeta: &model.MenuMeta{
+					Icon:   menu.Icon,
+					Title:  menu.Name,
+					IsHide: menu.Visible,
+				},
+			}
+			child := GetMenuTree(menu.ID, list)
+			if child != nil {
+				t.Children = child
+			}
+			tree = append(tree, t)
+		}
+	}
+	return tree
 }
 
 // func Where(c *gin.Context, db *gorm.DB) *gorm.DB {

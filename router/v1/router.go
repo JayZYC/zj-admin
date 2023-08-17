@@ -46,4 +46,16 @@ func Register(api *gin.RouterGroup) {
 
 	a.DELETE("/organization", deleteOrg)
 
+	/** menu 菜单 **/
+
+	a.GET("/menu", getMenu)
+
+	a.POST("/menu", addMenu)
+
+	a.PUT("/menu", updateMenu)
+
+	a.DELETE("/menu", deleteMenu)
+
+	a.GET("/menu/routes", getMenuTree)
+
 }

@@ -11,7 +11,7 @@ import (
 
 func FindUserByNameAndPWD(username, password string) (*model.User, error) {
 	var user = new(model.User)
-	err := db.Debug().
+	err := db.
 		Where("username = ? AND password = ?", username, password).
 		First(user).Error
 	return user, err
@@ -58,8 +58,8 @@ func AddUser(user model.User) error {
 }
 
 // 更新用户
-func UpdateUser(user model.User) error {
-	return db.Model(&model.User{}).Omit("create_time", "password", "username", "phone").Update(&user).Error
+func UpdateUser(user model.UpdateUser) error {
+	return db.Model(&user).Updates(&user).Error
 }
 
 func DeleteUser(id uuid.UUID) error {

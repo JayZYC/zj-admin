@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS "role" (
     "update_time" TIMESTAMPTZ DEFAULT NULL,
     "deletedAt" TIMESTAMPTZ DEFAULT NULL,
     "name" varchar(40) DEFAULT NULL,
-    "access" integer [] DEFAULT NULL,
+    "access" integer[] DEFAULT NULL,
     "parent_id" uuid DEFAULT NULL
 );
 
@@ -85,24 +85,25 @@ comment on column role.access is '菜单和按钮权限集合';
 INSERT INTO
     "role"
 VALUES
-    (uuid_generate_v4(), now(), now(), NULL, '超级管理员', NULL, NULL);
+    (uuid('5138e5da-4161-485a-bd1f-5f5a10de2f80'), now(), now(), NULL, '超级管理员', NULL, NULL);
 
 INSERT INTO
     "role"
 VALUES
-    (uuid_generate_v4(), now(), now(), NULL, '管理员', ARRAY[1,2,3,4,5,6,7], uuid('5138e5da-4161-485a-bd1f-5f5a10de2f80'));
+    (uuid('166108d4-75bf-4688-b2e6-1643a2df8d03'), now(), now(), NULL, '管理员', ARRAY[1,2,3,4,5,6,7], uuid('5138e5da-4161-485a-bd1f-5f5a10de2f80'));
 
 INSERT INTO
     "role"
 VALUES
     (
-        DEFAULT,
+        uuid('0592b9d9-b8d6-45e6-86eb-2a441da0a5b9'),
         now(),
         now(),
         NULL,
         '用户',
         ARRAY [1,2,3,4,5,6,7],
-        2
+        2,
+        uuid('5138e5da-4161-485a-bd1f-5f5a10de2f80')
     );
 
 /*
@@ -118,7 +119,7 @@ CREATE TABLE "role_perm" (
     "path" varchar(128) NULL DEFAULT '',
     "component" varchar(128) NULL DEFAULT NULL,
     "perm" varchar(128) NULL DEFAULT NULL,
-    "visible" SMALLINT NOT NULL DEFAULT 1,
+    "visible" bool NOT NULL DEFAULT true,
     "sort" SMALLINT NULL DEFAULT 0,
     "icon" varchar(64) NULL DEFAULT '',
     "redirect" varchar(128) NULL DEFAULT NULL,
@@ -141,7 +142,7 @@ comment on column role_perm.component is '组件路径(vue页面完整路径，�
 
 comment on column role_perm.perm is '权限标识';
 
-comment on column role_perm.visible is '显示状态(1-显示;0-隐藏)';
+comment on column role_perm.visible is '显示状态(true-显示;false-隐藏)';
 
 comment on column role_perm.sort is '排序';
 
@@ -164,7 +165,7 @@ VALUES
         '/system',
         'Layout',
         NULL,
-        1,
+        true,
         1,
         'system',
         '/system/user',
@@ -183,7 +184,7 @@ VALUES
         '/system/user',
         'system/user/index',
         NULL,
-        1,
+        true,
         1,
         NULL,
         NULL,
@@ -202,7 +203,7 @@ VALUES
         '/system/role',
         'system/role/index',
         NULL,
-        1,
+        true,
         1,
         NULL,
         NULL,
@@ -221,7 +222,7 @@ VALUES
         '/system/organization',
         'system/organization/index',
         NULL,
-        1,
+        true,
         1,
         NULL,
         NULL,
@@ -235,12 +236,12 @@ VALUES
     (
         DEFAULT,
         2,
-        '用户按钮',
+        '编辑用户按钮',
         4,
         NULL,
         NULL,
         'sys:user:edit',
-        1,
+        true,
         NULL,
         NULL,
         NULL,
@@ -254,12 +255,12 @@ VALUES
     (
         DEFAULT,
         2,
-        '用户按钮',
+        '添加用户按钮',
         4,
         NULL,
         NULL,
         'sys:user:add',
-        1,
+        true,
         NULL,
         NULL,
         NULL,
@@ -273,12 +274,12 @@ VALUES
     (
         DEFAULT,
         2,
-        '用户按钮',
+        '删除用户按钮',
         4,
         NULL,
         NULL,
         'sys:user:delete',
-        1,
+        true,
         NULL,
         NULL,
         NULL,

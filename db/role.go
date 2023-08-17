@@ -8,16 +8,16 @@ import (
 	"github.com/lib/pq"
 )
 
-// 根据role_id查询对应的权限按钮
+// FindPermByRoleID 根据role_id查询对应的权限按钮
 func FindPermByRoleID(id uuid.UUID) ([]string, error) {
 	var perm struct {
-		Perm pq.StringArray
+		Perm pq.StringArray `gorm:"type:text[]"`
 	}
 	err := db.Raw("SELECT array_agg(perm) as perm FROM role_perm WHERE id = ANY (SELECT unnest(access) FROM role WHERE id = ?) AND perm != ''", id).Scan(&perm).Error
 	return perm.Perm, err
 }
 
-// 根据role_id查询角色列表
+// FindRoleListByRoleID 根据role_id查询角色列表
 func FindRoleListByRoleID(id uuid.UUID, page pagination.PageRequest) (pagination.PageResponse, error) {
 	roles := make(model.Roles, 0)
 	var total struct {
@@ -36,7 +36,7 @@ func AddRole(role model.Role) error {
 }
 
 func UpdateRole(role model.UpdateRole) error {
-	return db.Model(&model.Role{}).Update(&role).Error
+	return db.Model(&role).Updates(&role).Error
 }
 
 func DeleteRole(id uuid.UUID) error {
